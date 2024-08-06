@@ -1,4 +1,3 @@
-// src/screens/ProfileScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity, ActivityIndicator, Image, Animated } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -35,7 +34,6 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           console.error('Error fetching user data:', error);
         } finally {
           setLoading(false);
-          // Animate the fade-in effect
           Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 1000,
@@ -70,7 +68,6 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     );
   }
 
-  // Improved comparison
   const userSex = userData?.sex?.trim().toLowerCase();
   const isMale = userSex === 'male';
 

@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, ActivityIndicator, TextInput } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../types';
-import { getMealsByCategory, getRandomMeals, searchMeals, getCategories } from '../services/mealService';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { doc, getDoc } from 'firebase/firestore';
-import { db, auth } from '../services/firebaseConfig';
-import PopupDialog from 'react-native-popup-dialog';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { auth, db } from '../services/firebaseConfig';
+import { getCategories, getMealsByCategory, getRandomMeals, searchMeals } from '../services/mealService';
+import { RootStackParamList } from '../types';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -33,7 +32,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [search, setSearch] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [firstName, setFirstName] = useState<string>('');
-  const [popupVisible, setPopupVisible] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -63,7 +61,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           if (userDoc.exists()) {
             const userData = userDoc.data();
             setFirstName(userData.firstName || 'User');
-            setPopupVisible(true); // Show the popup
           }
         } catch (error) {
           console.error('Error fetching user data:', error);
@@ -73,7 +70,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
     fetchMeals();
     fetchCategories();
-    fetchUserData(); // Fetch user data on component mount
+    fetchUserData(); 
   }, []);
 
   const handleMealPress = (mealId: string) => {
@@ -186,18 +183,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           ListEmptyComponent={<Text style={styles.emptyMessage}>No meals available.</Text>}
         />
       )}
-      <PopupDialog
-        visible={popupVisible}
-        onTouchOutside={() => setPopupVisible(false)}
-        onDismiss={() => setPopupVisible(false)}
-      >
-        <View style={styles.popup}>
-          <Text style={styles.welcomeMessage}>Welcome {firstName}!</Text>
-          <TouchableOpacity onPress={() => setPopupVisible(false)} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Clear</Text>
-          </TouchableOpacity>
-        </View>
-      </PopupDialog>
     </View>
   );
 };
@@ -208,7 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   titleBar: {
-    backgroundColor: '#8B4513', // Brown color
+    backgroundColor: '#8B4513',
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -223,7 +208,7 @@ const styles = StyleSheet.create({
     padding: 16,
     elevation: 2,
     shadowColor: 'black',
-    shadowOpacity: 0.2, 
+    shadowOpacity: 0.1, 
     shadowOffset: { width: 0, height: 2 }, 
     shadowRadius: 4 
   },
@@ -280,6 +265,10 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: 'black',
+    shadowOpacity: 0.1, 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowRadius: 4 
   },
   selectedCategory: {
     backgroundColor: '#8B4513',
@@ -290,24 +279,6 @@ const styles = StyleSheet.create({
   },
   selectedCategoryName: {
     color: '#fff',
-  },
-  popup: {
-    padding: 30,
-    alignItems: 'center',
-  },
-  welcomeMessage: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  closeButton: {
-    backgroundColor: '#8B4513',
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
   },
 });
 

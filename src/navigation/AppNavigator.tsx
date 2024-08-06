@@ -7,7 +7,7 @@ import LoginScreen from '../screens/LoginScreen';
 import MealDetailScreen from '../screens/MealDetailScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SignupScreen from '../screens/SignupScreen';
-import { auth } from '../services/firebaseConfig'; // Adjust to your authentication service
+import { auth } from '../services/firebaseConfig';
 import { RootStackParamList } from '../types';
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -16,7 +16,6 @@ const AppNavigator: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
-    // Check authentication status
     const unsubscribe = auth.onAuthStateChanged(user => {
       setIsAuthenticated(!!user);
     });
