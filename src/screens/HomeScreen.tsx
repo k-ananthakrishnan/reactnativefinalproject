@@ -183,6 +183,12 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           ListEmptyComponent={<Text style={styles.emptyMessage}>No meals available.</Text>}
         />
       )}
+       <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate('AddRecipe')}
+      >
+        <FontAwesome name="plus" size={30} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -279,6 +285,18 @@ const styles = StyleSheet.create({
   },
   selectedCategoryName: {
     color: '#fff',
+  },
+  addButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#8B4513',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
   },
 });
 

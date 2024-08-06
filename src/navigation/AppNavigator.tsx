@@ -9,6 +9,10 @@ import ProfileScreen from '../screens/ProfileScreen';
 import SignupScreen from '../screens/SignupScreen';
 import { auth } from '../services/firebaseConfig';
 import { RootStackParamList } from '../types';
+import AddRecipeScreen from '../screens/AddRecipeScreen';
+import MyRecipeList from '../screens/MyRecipeList';
+import MyRecipeDetails from '../screens/MyRecipeDetails';
+
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -37,6 +41,9 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen name="MealDetail" component={MealDetailScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="Favourites" component={FavouritesScreen} />
+            <Stack.Screen name="AddRecipe" component={AddRecipeScreen} />
+            <Stack.Screen name="MyRecipeList" component={MyRecipeList} />
+        <Stack.Screen name="MyRecipeDetails" component={MyRecipeDetails} />
           </>
         )}
       </Stack.Navigator>

@@ -100,6 +100,10 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         <Icon name="heart" size={20} color="red" />
         <Text style={styles.linkText}>My Favourites</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('MyRecipeList')} >
+        <Text>My Recipes</Text>
+      </TouchableOpacity>
       <Button title="Logout" onPress={handleLogout} color="red" />
     </Animated.View>
   );
