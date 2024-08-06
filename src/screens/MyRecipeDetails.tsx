@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, Linking, TouchableOpacity } from 'react-native';
-import { collection, doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
@@ -36,7 +35,7 @@ const MyRecipeDetails: React.FC = () => {
   }, [recipeId]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />;
   }
 
   if (!recipe) {
@@ -59,7 +58,7 @@ const MyRecipeDetails: React.FC = () => {
   return (
     <FlatList
       data={[
-        { key: 'Title', value: recipe.recipeName },
+        { key: recipe.recipeName},
         { key: 'Image', value: recipe.images[0] || '' },
         { key: 'Ingredients', value: recipe.ingredients.join(', ') },
         { key: 'Instructions', value: recipe.instructions.join('\n') },
@@ -96,6 +95,11 @@ const MyRecipeDetails: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   notFound: {
     flex: 1,
     justifyContent: 'center',
@@ -103,22 +107,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'gray',
     margin: 16,
+    textAlign: 'center',
   },
   itemContainer: {
     marginBottom: 16,
+    padding: 12,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginTop: 15,
+    color: '#333',
   },
   text: {
-    fontSize: 16,
-    color: '#333',
+    marginTop: 20,
+    fontSize: 14,
+    color: '#666',
   },
   image: {
     width: '100%',
-    height: 200,
+    height: 250,
     resizeMode: 'cover',
     marginBottom: 16,
   },
@@ -127,7 +135,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   listItem: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#333',
     marginVertical: 4,
   },

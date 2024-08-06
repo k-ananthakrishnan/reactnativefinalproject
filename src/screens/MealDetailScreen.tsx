@@ -119,6 +119,7 @@ const MealDetailScreen: React.FC<Props> = ({ route }) => {
 
 const styles = StyleSheet.create({
   container: {
+    padding: 10,
     flex: 1,
     backgroundColor: '#f5f5f5',
   },

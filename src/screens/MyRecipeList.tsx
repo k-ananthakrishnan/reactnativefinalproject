@@ -103,15 +103,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   recipeCard: {
+    flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 8,
     overflow: 'hidden',
     marginBottom: 16,
-    elevation: 2, // Android shadow
-    shadowColor: '#000', // iOS shadow
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    elevation: 2,
+    shadowColor: 'black',
+    shadowOpacity: 0.6, 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowRadius: 4
   },
   recipeName: {
     fontSize: 20,
@@ -120,8 +121,10 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   image: {
-    width: '100%',
-    height: 150,
+    width: 100,
+    height: 100,
+    margin: 5,
+    borderRadius: 8,
     resizeMode: 'cover',
   },
 });
