@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, ActivityIndicator, TextInput } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
-import { getMealsByCategory, getRandomMeals, searchMeals , getCategories} from '../services/mealService';
+import { getMealsByCategory, getRandomMeals, searchMeals, getCategories } from '../services/mealService';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import axios from 'axios';
+import { doc, getDoc } from 'firebase/firestore';
+import { db, auth } from '../services/firebaseConfig';
+import PopupDialog from 'react-native-popup-dialog';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -30,6 +32,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [search, setSearch] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
+  const [firstName, setFirstName] = useState<string>('');
+  const [popupVisible, setPopupVisible] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -52,8 +56,24 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       }
     };
 
+    const fetchUserData = async () => {
+      if (auth.currentUser) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setFirstName(userData.firstName || 'User');
+            setPopupVisible(true); // Show the popup
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      }
+    };
+
     fetchMeals();
     fetchCategories();
+    fetchUserData(); // Fetch user data on component mount
   }, []);
 
   const handleMealPress = (mealId: string) => {
@@ -166,6 +186,18 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           ListEmptyComponent={<Text style={styles.emptyMessage}>No meals available.</Text>}
         />
       )}
+      <PopupDialog
+        visible={popupVisible}
+        onTouchOutside={() => setPopupVisible(false)}
+        onDismiss={() => setPopupVisible(false)}
+      >
+        <View style={styles.popup}>
+          <Text style={styles.welcomeMessage}>Welcome {firstName}!</Text>
+          <TouchableOpacity onPress={() => setPopupVisible(false)} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>Clear</Text>
+          </TouchableOpacity>
+        </View>
+      </PopupDialog>
     </View>
   );
 };
@@ -191,9 +223,9 @@ const styles = StyleSheet.create({
     padding: 16,
     elevation: 2,
     shadowColor: 'black',
-    shadowOpacity: 0.1, 
+    shadowOpacity: 0.2, 
     shadowOffset: { width: 0, height: 2 }, 
-    shadowRadius: 2
+    shadowRadius: 4 
   },
   mealItem: {
     flexDirection: 'row',
@@ -226,7 +258,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     height: 40,
-    borderColor: 'grey',
+    borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
     paddingLeft: 8,
@@ -248,10 +280,6 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: 'black',
-    shadowOpacity: 0.1, 
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowRadius: 2
   },
   selectedCategory: {
     backgroundColor: '#8B4513',
@@ -262,7 +290,25 @@ const styles = StyleSheet.create({
   },
   selectedCategoryName: {
     color: '#fff',
-  }
+  },
+  popup: {
+    padding: 30,
+    alignItems: 'center',
+  },
+  welcomeMessage: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: '#8B4513',
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
 });
 
 export default HomeScreen;
