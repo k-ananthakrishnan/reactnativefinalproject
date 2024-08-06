@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, Linking, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -51,50 +51,64 @@ const MyRecipeDetails: React.FC = () => {
   const youtubeVideoId = getYouTubeVideoId(recipe.youtubeLink);
   const youtubeEmbedUrl = youtubeVideoId ? `https://www.youtube.com/embed/${youtubeVideoId}` : '';
 
-  const renderItem = ({ item }: { item: string }) => (
-    <Text style={styles.listItem}>• {item}</Text>
-  );
+  const renderItem = ({ item }: { item: any }) => {
+    if (item.key === 'Image') {
+      return item.value ? (
+        <Image source={{ uri: item.value }} style={styles.image} />
+      ) : null;
+    }
+    if (item.key === 'Video') {
+      return youtubeEmbedUrl ? (
+        <WebView
+          style={styles.video}
+          javaScriptEnabled={true}
+          source={{ uri: youtubeEmbedUrl }}
+        />
+      ) : (
+        <Text style={styles.text}>No video available.</Text>
+      );
+    }
+    if (item.key === 'Recipe Name') {
+      return (
+        <View style={styles.recipeNameContainer}>
+          <Text style={styles.recipeName}>{item.value}</Text>
+        </View>
+      );
+    }
+    return (
+      <View style={styles.itemContainer}>
+        <Text style={styles.title}>{item.key}</Text>
+        <Text style={styles.text}>{item.value}</Text>
+      </View>
+    );
+  };
 
   return (
-    <FlatList
-      data={[
-        { key: recipe.recipeName},
-        { key: 'Image', value: recipe.images[0] || '' },
-        { key: 'Ingredients', value: recipe.ingredients.join(', ') },
-        { key: 'Instructions', value: recipe.instructions.join('\n') },
-        { key: 'Video', value: youtubeEmbedUrl }
-      ]}
-      keyExtractor={(item) => item.key}
-      renderItem={({ item }) => {
-        if (item.key === 'Image') {
-          return item.value ? (
-            <Image source={{ uri: item.value }} style={styles.image} />
-          ) : null;
-        }
-        if (item.key === 'Video') {
-          return youtubeEmbedUrl ? (
-            <WebView
-              style={styles.video}
-              javaScriptEnabled={true}
-              source={{ uri: youtubeEmbedUrl }}
-            />
-          ) : (
-            <Text style={styles.text}>No video available.</Text>
-          );
-        }
-        return (
-          <View style={styles.itemContainer}>
-            <Text style={styles.title}>{item.key}</Text>
-            <Text style={styles.text}>{item.value}</Text>
-          </View>
-        );
-      }}
-      ListEmptyComponent={<Text style={styles.notFound}>Recipe details not available.</Text>}
-    />
+    <View style={styles.container}>
+      <FlatList
+        data={[
+          { key: 'Recipe Name', value: recipe.recipeName },
+          { key: 'Image', value: recipe.images[0] || '' },
+          { key: 'Ingredients', value: recipe.ingredients.join(', ') },
+          { key: 'Instructions', value: recipe.instructions.join('\n') },
+          { key: 'Video', value: youtubeEmbedUrl }
+        ]}
+        keyExtractor={(item) => item.key}
+        renderItem={renderItem}
+        contentContainerStyle={styles.listContentContainer}
+        ListEmptyComponent={<Text style={styles.notFound}>Recipe details not available.</Text>}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    backgroundColor: '#f5f5f5',
+  },
   loader: {
     flex: 1,
     justifyContent: 'center',
@@ -112,15 +126,20 @@ const styles = StyleSheet.create({
   itemContainer: {
     marginBottom: 16,
     padding: 12,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 15,
+    marginBottom: 8,
     color: '#333',
   },
   text: {
-    marginTop: 20,
     fontSize: 14,
     color: '#666',
   },
@@ -128,16 +147,34 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 250,
     resizeMode: 'cover',
+    borderRadius: 8,
     marginBottom: 16,
   },
   video: {
     height: 200,
     marginVertical: 16,
+    borderRadius: 8,
+  },
+  listContentContainer: {
+    paddingBottom: 16,
   },
   listItem: {
     fontSize: 14,
     color: '#333',
     marginVertical: 4,
+  },
+  recipeNameContainer: {
+    marginBottom: 16,
+    marginTop: 16,
+    padding: 12,
+    backgroundColor: 'white',
+    borderRadius: 8,
+  },
+  recipeName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'black', 
+    textAlign: 'center', 
   },
 });
 
